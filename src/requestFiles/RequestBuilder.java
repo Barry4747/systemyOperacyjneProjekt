@@ -1,15 +1,21 @@
 package requestFiles;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
+import org.apache.commons.math3.distribution.BetaDistribution;
+
 
 public class RequestBuilder {
 
-    public static ArrayList<Request> buildRequests(int n){
-        ArrayList<Request> requestsList = new ArrayList<>();
+    public static LinkedList<Request> buildRequests(int n){
+        LinkedList<Request> requestsList = new LinkedList<>();
+
+        BetaDistribution betaDistributionLength = new BetaDistribution(2, 5);
+        BetaDistribution betaDistributionArrivalTime = new BetaDistribution(1, 100);
 
         for(int i=0; i<n; i++){
-            requestsList.add(new Request(new Random().nextInt(100)+1, 0, new Random().nextInt(1+ new Random().nextInt(50))+1));
+            requestsList.add(new Request(i, (int) (betaDistributionLength.sample()*100), (int) (betaDistributionArrivalTime.sample() * 1000), 0, false));
         }
 
         return requestsList;

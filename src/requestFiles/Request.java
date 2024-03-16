@@ -1,43 +1,51 @@
 package requestFiles;
 
 public class Request {
-    private int size;
-    private int prio;
+    private int number;
+    private int length;
     private int arrivalTime;
-    private int probability;
+    private int totalWait;
     private boolean done;
 
-    public Request(int size, int prio, int probability){
-        this.size = size;
-        this.prio = prio;
-        this.probability = probability;
-        done = false;
+
+    public Request(int number, int length, int arrivalTime, int totalWait, boolean done) {
+        this.number = number;
+        this.length = length;
+        this.arrivalTime = arrivalTime;
+        this.totalWait = totalWait;
+        this.done = done;
     }
-
-
     //getters and setters
-    public int getSize() {
-        return size;
+    public int getNumber() {
+        return number;
     }
 
-    public void setSize(int size) {
-        this.size = size;
+    public void setNumber(int number) {
+        this.number = number;
     }
 
-    public int getPrio() {
-        return prio;
+    public int getLength() {
+        return length;
     }
 
-    public void setPrio(int prio) {
-        this.prio = prio;
+    public void setLength(int length) {
+        this.length = length;
     }
 
-    public int getProbability() {
-        return probability;
+    public int getArrivalTime() {
+        return arrivalTime;
     }
 
-    public void setProbability(int probability) {
-        this.probability = probability;
+    public void setArrivalTime(int arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+    public int getTotalWait() {
+        return totalWait;
+    }
+
+    public void setTotalWait(int totalWait) {
+        this.totalWait = totalWait;
     }
 
     public boolean isDone() {
@@ -51,11 +59,11 @@ public class Request {
     @Override
     public String toString() {
         return "Request{" +
-                "size=" + size +
-                ", prio=" + prio +
-                ", probability=" + probability +
+                "number=" + number +
+                ", length=" + length +
+                ", arrivalTime=" + arrivalTime +
+                ", totalWait=" + totalWait +
                 ", done=" + done +
                 '}';
     }
-
 }
