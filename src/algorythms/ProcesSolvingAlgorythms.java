@@ -1,59 +1,137 @@
 package algorythms;
 
+import org.apache.commons.math3.distribution.BetaDistribution;
+import org.apache.commons.math3.random.RandomDataGenerator;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import requestFiles.Request;
+import requestFiles.RequestBuilder;
 
+import javax.swing.*;
+import java.awt.*;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
+import static requestFiles.RequestBuilder.buildRequests;
+
 public class ProcesSolvingAlgorythms {
-    int duration;
+    private int duration;
+    private double[] probabilities;
 
 
     public ProcesSolvingAlgorythms(int duration) {
         this.duration = duration;
     }
 
-    public LinkedList<Request> fcfs(LinkedList<Request> list){
-        if(list.size()<0){
-            return new LinkedList<>();
-        }
-        Queue<Request> queue = new LinkedList<>();
-        for(Request i : list){
-            queue.add(i);
-        }
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public double[] getProbabilities() {
+        return probabilities;
+    }
+
+    public void setProbabilities(double[] probabilities) {
+        this.probabilities = probabilities;
+    }
+
+    public LinkedList<Request> fcfs(){
+        LinkedList<Request> list = new LinkedList<>();
+        int counter=0;
+        Random random = new Random();
         for(int i=0; i<duration; i++){
-            queue.peek().getLength();
+            list.addAll(buildRequests(5, i, 2.0, 50, probabilities[i], duration));
+            if(!list.isEmpty()){
+                list.get(counter).setLength(list.get(counter).getLength()-1);
+                if(list.get(counter).getLength()<=0){
+                    list.get(counter).setDone(true);
+                    list.get(counter).setEndTime(i);
+                    counter++;
+                }
+            }
         }
-        return new LinkedList<>();
+        System.out.println("Skończone zadania: "+counter);
+
+        return list;
     }
 
 
-    public LinkedList<Request> roundRobin(LinkedList<Request> list, int k){
 
-        if(list.size()==0){
-            return new LinkedList<>();
+    public void generateDiagram(double[] arr, String diagramName, String yName){
+        int dataSize = arr.length;
+
+        XYSeries series = new XYSeries(diagramName);
+        for (int i = 0; i < dataSize; i++) {
+            series.add(i, arr[i]);
         }
 
-        Queue<Request> queue = new LinkedList<>();
-        for(Request i : list){
-            queue.add(i);
+        XYSeriesCollection dataset = new XYSeriesCollection(series);
+
+        JFreeChart chart = ChartFactory.createXYLineChart(
+                diagramName,
+                "Index",
+                yName,
+                dataset
+        );
+
+        ChartPanel chartPanel = new ChartPanel(chart);
+
+        JFrame frame = new JFrame(diagramName);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+        frame.add(chartPanel, BorderLayout.CENTER);
+        frame.pack();
+        frame.setVisible(true);
+    }
+    public void generateDiagram(int[] arr, String diagramName, String yName){
+        int dataSize = arr.length;
+
+        XYSeries series = new XYSeries(diagramName);
+        for (int i = 0; i < dataSize; i++) {
+            series.add(i, arr[i]);
         }
-        for(int i=0; i<duration; i+=k){
-            Request tempRequest = queue.remove();
-            tempRequest.setLength(tempRequest.getLength() - k);
-            if(tempRequest.getLength()>0)
-                queue.add(tempRequest);
-            else {
-                i += tempRequest.getLength();
-                if (queue.size()==0)
-                    duration-=i;
-                    break;
-            }
+
+        XYSeriesCollection dataset = new XYSeriesCollection(series);
+
+        JFreeChart chart = ChartFactory.createXYLineChart(
+                diagramName,
+                "Index",
+                yName,
+                dataset
+        );
+
+        ChartPanel chartPanel = new ChartPanel(chart);
+
+        JFrame frame = new JFrame(diagramName);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+        frame.add(chartPanel, BorderLayout.CENTER);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    public void createDistribution(int dataSize){
+        double alpha = 1.5;
+        double beta = 2.0;
+
+        BetaDistribution betaDistribution = new BetaDistribution(alpha, beta);
+
+        probabilities = new double[dataSize];
+
+        for (int i = 0; i < dataSize; i++) {
+            double value = betaDistribution.density((double)  i/dataSize);
+            probabilities[i] =  (value /2);
         }
-        return (LinkedList<Request>) queue;
     }
 
 }

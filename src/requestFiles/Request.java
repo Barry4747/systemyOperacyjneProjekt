@@ -3,17 +3,20 @@ package requestFiles;
 public class Request {
     private int number;
     private int length;
+    private int beginingLength;
     private int arrivalTime;
+    private int endTime;
     private int totalWait;
     private boolean done;
 
 
-    public Request(int number, int length, int arrivalTime, int totalWait, boolean done) {
+    public Request(int number, int length, int arrivalTime, int totalWait) {
         this.number = number;
         this.length = length;
+        this.beginingLength = length;
         this.arrivalTime = arrivalTime;
-        this.totalWait = totalWait;
-        this.done = done;
+        this.endTime = totalWait;
+        this.done = false;
     }
     //getters and setters
     public int getNumber() {
@@ -56,6 +59,22 @@ public class Request {
         this.done = done;
     }
 
+    public int getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(int endTime) {
+        this.endTime = endTime;
+    }
+
+    public int getBeginingLength() {
+        return beginingLength;
+    }
+
+    public void setBeginingLength(int beginingLength) {
+        this.beginingLength = beginingLength;
+    }
+
     @Override
     public String toString() {
         return "Request{" +
@@ -65,5 +84,9 @@ public class Request {
                 ", totalWait=" + totalWait +
                 ", done=" + done +
                 '}';
+    }
+
+    public void calculateTotalWait() {
+        totalWait = endTime-arrivalTime;
     }
 }

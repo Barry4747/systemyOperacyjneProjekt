@@ -1,56 +1,57 @@
 import algorythms.ProcesSolvingAlgorythms;
-import org.apache.commons.math3.geometry.partitioning.RegionFactory;
 import requestFiles.Request;
-import requestFiles.RequestCalculations;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
-
-import static requestFiles.RequestBuilder.buildRequests;
 
 public class Main {
     public static void main(String[] args) {
-        int max=0;
-        int sum=0;
-        int max2=0;
-        int sum2=0;
-
-        int listSize = 10000;
-        int robinK =5;
-        int duration= 1000;
+        int duration=1000;
 
         ProcesSolvingAlgorythms procesSolvingAlgorythms = new ProcesSolvingAlgorythms(duration);
+        procesSolvingAlgorythms.createDistribution(duration);
+        procesSolvingAlgorythms.generateDiagram(procesSolvingAlgorythms.getProbabilities(), "Rozkład prawdopodobieństwa", "Prawdopodobieństwo");
 
-        LinkedList<Request> list = buildRequests(listSize);
-        for(Request i : list){
-            if(i.getLength()>max){
-                max=i.getLength();
+
+        LinkedList<Request> list = procesSolvingAlgorythms.fcfs();
+
+        int averageDoneWaitingTime=0;
+        int averageWaitingTime=0;
+        int done=0;
+        int averageSize=0;
+
+        int[] beginingLength = new int[list.size()];
+        int[] arrivalTime = new int[list.size()];
+        int[] endTime = new int[list.size()];
+        int[] totalWait = new int[list.size()];
+
+
+
+        for(int i=0; i<list.size(); i++){
+            list.get(i).calculateTotalWait();
+
+            beginingLength[i]=list.get(i).getBeginingLength();
+            arrivalTime[i]=list.get(i).getArrivalTime();
+            endTime[i]=list.get(i).getEndTime();
+            totalWait[i]=list.get(i).getTotalWait();
+
+            if(list.get(i).isDone()){
+                averageDoneWaitingTime+=list.get(i).getTotalWait();
+                done++;
             }
-            if(i.getArrivalTime()>max2){
-                max2=i.getArrivalTime();
-            }
-            sum+=i.getLength();
-            sum2+=i.getArrivalTime();
-            System.out.println(i.toString());
+            averageWaitingTime+=list.get(i).getTotalWait();
+            averageSize+=list.get(i).getBeginingLength();
         }
-        list.sort(Comparator.comparingInt(Request::getArrivalTime));
-        LinkedList<Request> tempList = new LinkedList<>();
-        int counter=0;
-        for(int i=0; i<list.get(listSize-1).getArrivalTime(); i++){
-            while(list.get(counter).getArrivalTime()==i &&counter<listSize){
-                tempList.add(list.get(counter));
-                counter++;
-            }
-            tempList=procesSolvingAlgorythms.roundRobin(tempList, robinK);
-        }
+
+        procesSolvingAlgorythms.generateDiagram(beginingLength, "Długość procesu", "Długość");
+        procesSolvingAlgorythms.generateDiagram(arrivalTime, "Czas pojawienia się procesu", "Czas");
+        procesSolvingAlgorythms.generateDiagram(endTime, "Czas zakończenia procedu", "Czas");
+        procesSolvingAlgorythms.generateDiagram(totalWait, "Czas oczekiwania", "Czas");
 
 
+        System.out.println("Średni czas oczekiwania: "+averageWaitingTime/list.size()+" Średni czas oczekiwania zakończonych procesów: "+averageDoneWaitingTime/done+" Średni rozmiar: "+averageSize/list.size()+" Done: "+done);
 
-        System.out.println("Max length: "+max+" | Total length: "+sum+" | Average length: "+sum/10000);
-        System.out.println("Max arrival time: "+max2+" | Total arrival time: "+sum2+" | Average arrival time: "+sum2/10000);
-        System.out.println(tempList.size());
+        System.out.println("Utworzono: "+list.size());
+
 
 
     }
