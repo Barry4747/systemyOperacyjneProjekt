@@ -13,10 +13,7 @@ import requestFiles.RequestBuilder;
 import javax.swing.*;
 import java.awt.*;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 
 import static requestFiles.RequestBuilder.buildRequests;
 
@@ -50,8 +47,8 @@ public class ProcesSolvingAlgorythms {
         int counter=0;
         Random random = new Random();
         for(int i=0; i<duration; i++){
-            list.addAll(buildRequests(5, i, 2.0, 50, probabilities[i], duration));
-            if(!list.isEmpty()){
+            list.addAll(buildRequests(1, i, 2.0, 50, probabilities[i], duration));
+            if(!list.isEmpty()&&counter!=list.size()){
                 list.get(counter).setLength(list.get(counter).getLength()-1);
                 if(list.get(counter).getLength()<=0){
                     list.get(counter).setDone(true);
@@ -62,6 +59,32 @@ public class ProcesSolvingAlgorythms {
         }
         System.out.println("Skończone zadania: "+counter);
 
+        return list;
+    }
+
+    public LinkedList<Request> sjf(){
+        LinkedList<Request> list = new LinkedList<>();
+
+        PriorityQueue<Request> queue = new PriorityQueue<>(Comparator.comparing(Request::getBeginingLength));
+
+        Request tempRequest=null;
+
+        for(int i=0; i<duration; i++){
+            queue.addAll(buildRequests(1, i, 2.0, 50, probabilities[i], duration));
+            if(!queue.isEmpty()&&(tempRequest==null|| tempRequest.isDone())){
+                tempRequest=queue.remove();
+                list.add(tempRequest);
+            } else if (!queue.isEmpty()) {
+                tempRequest.setLength(tempRequest.getLength()-1);
+                if(tempRequest.getLength()<=0){
+                    tempRequest.setEndTime(i);
+                    tempRequest.setDone(true);
+                }
+            }
+        }
+        while(!queue.isEmpty()){
+            list.add(queue.remove());
+        }
         return list;
     }
 
@@ -130,7 +153,7 @@ public class ProcesSolvingAlgorythms {
 
         for (int i = 0; i < dataSize; i++) {
             double value = betaDistribution.density((double)  i/dataSize);
-            probabilities[i] =  (value /2);
+            probabilities[i] =  (value/3)+0.2;
         }
     }
 

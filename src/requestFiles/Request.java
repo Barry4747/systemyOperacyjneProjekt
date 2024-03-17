@@ -80,7 +80,9 @@ public class Request {
         return "Request{" +
                 "number=" + number +
                 ", length=" + length +
+                ", beginingLength=" + beginingLength +
                 ", arrivalTime=" + arrivalTime +
+                ", endTime=" + endTime +
                 ", totalWait=" + totalWait +
                 ", done=" + done +
                 '}';

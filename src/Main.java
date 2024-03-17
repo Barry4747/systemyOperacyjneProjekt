@@ -12,7 +12,7 @@ public class Main {
         procesSolvingAlgorythms.generateDiagram(procesSolvingAlgorythms.getProbabilities(), "Rozkład prawdopodobieństwa", "Prawdopodobieństwo");
 
 
-        LinkedList<Request> list = procesSolvingAlgorythms.fcfs();
+        LinkedList<Request> list = procesSolvingAlgorythms.sjf();
 
         int averageDoneWaitingTime=0;
         int averageWaitingTime=0;
@@ -25,7 +25,7 @@ public class Main {
         int[] totalWait = new int[list.size()];
 
 
-
+        //do testowania wydajności algorytmów i przyznanych im priorytetów
         for(int i=0; i<list.size(); i++){
             list.get(i).calculateTotalWait();
 
@@ -33,7 +33,7 @@ public class Main {
             arrivalTime[i]=list.get(i).getArrivalTime();
             endTime[i]=list.get(i).getEndTime();
             totalWait[i]=list.get(i).getTotalWait();
-
+            System.out.println(list.get(i).toString());
             if(list.get(i).isDone()){
                 averageDoneWaitingTime+=list.get(i).getTotalWait();
                 done++;
