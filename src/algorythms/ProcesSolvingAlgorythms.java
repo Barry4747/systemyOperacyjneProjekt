@@ -20,12 +20,15 @@ import static requestFiles.RequestBuilder.buildRequests;
 public class ProcesSolvingAlgorythms {
     private int duration;
     private double[] probabilities;
+    private float timePeriod;
 
 
-    public ProcesSolvingAlgorythms(int duration) {
+    public ProcesSolvingAlgorythms(int duration, float timePeriod) {
         this.duration = duration;
+        this.timePeriod = timePeriod;
     }
 
+    //getters and setters
     public int getDuration() {
         return duration;
     }
@@ -42,14 +45,22 @@ public class ProcesSolvingAlgorythms {
         this.probabilities = probabilities;
     }
 
+    public float getTimePeriod() {
+        return timePeriod;
+    }
+
+    public void setTimePeriod(float timePeriod) {
+        this.timePeriod = timePeriod;
+    }
+
     public LinkedList<Request> fcfs(){
         LinkedList<Request> list = new LinkedList<>();
         int counter=0;
-        Random random = new Random();
+
         for(int i=0; i<duration; i++){
             list.addAll(buildRequests(1, i, 2.0, 50, probabilities[i], duration));
             if(!list.isEmpty()&&counter!=list.size()){
-                list.get(counter).setLength(list.get(counter).getLength()-1);
+                list.get(counter).setLength(list.get(counter).getLength()-timePeriod);
                 if(list.get(counter).getLength()<=0){
                     list.get(counter).setDone(true);
                     list.get(counter).setEndTime(i);
@@ -69,28 +80,58 @@ public class ProcesSolvingAlgorythms {
 
         Request tempRequest=null;
 
+        LinkedList<Request> tempList = new LinkedList<>();
+
         for(int i=0; i<duration; i++){
-            queue.addAll(buildRequests(1, i, 2.0, 50, probabilities[i], duration));
+            tempList = new LinkedList<>();
+            tempList.addAll(buildRequests(1, i, 2.0, 50, probabilities[i], duration));
+            queue.addAll(tempList);
+            list.addAll(tempList);
+
             if(!queue.isEmpty()&&(tempRequest==null|| tempRequest.isDone())){
                 tempRequest=queue.remove();
-                list.add(tempRequest);
+//                list.add(tempRequest);
             } else if (!queue.isEmpty()) {
-                tempRequest.setLength(tempRequest.getLength()-1);
+                tempRequest.setLength(tempRequest.getLength()-timePeriod);
                 if(tempRequest.getLength()<=0){
                     tempRequest.setEndTime(i);
                     tempRequest.setDone(true);
                 }
             }
         }
-        while(!queue.isEmpty()){
-            list.add(queue.remove());
+//        while(!queue.isEmpty()){
+//            list.add(queue.remove());
+//        }
+        return list;
+    }
+
+    public LinkedList<Request> rr(int k){
+        LinkedList<Request> list = new LinkedList<>();
+
+        int counter=0;
+
+        for(int i=0; i<duration; i+=k){
+            for(int j=0; j<k; j++) {
+                list.addAll(buildRequests(1, i, 2.0, 50, probabilities[i], duration));
+            }
+            if(list.size()!=counter) {
+                list.get(counter).setLength(list.get(counter).getLength() - k + 1 - timePeriod);
+                if (list.get(counter).getLength() <= 0) {
+                    list.get(counter).setEndTime(i);
+                    list.get(counter).setDone(true);
+                    counter++;
+                }
+            }
         }
+        System.out.println("Skończone zadania: "+counter);
+
+
         return list;
     }
 
 
 
-    public void generateDiagram(double[] arr, String diagramName, String yName){
+    public JPanel generateDiagram(double[] arr, String diagramName, String yName){
         int dataSize = arr.length;
 
         XYSeries series = new XYSeries(diagramName);
@@ -100,7 +141,7 @@ public class ProcesSolvingAlgorythms {
 
         XYSeriesCollection dataset = new XYSeriesCollection(series);
 
-        JFreeChart chart = ChartFactory.createXYLineChart(
+        JFreeChart chart = ChartFactory.createScatterPlot(
                 diagramName,
                 "Index",
                 yName,
@@ -109,14 +150,14 @@ public class ProcesSolvingAlgorythms {
 
         ChartPanel chartPanel = new ChartPanel(chart);
 
-        JFrame frame = new JFrame(diagramName);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        JLabel label = new JLabel(diagramName);
+        JPanel frame = new JPanel();
         frame.setLayout(new BorderLayout());
+        frame.add(label, BorderLayout.NORTH);
         frame.add(chartPanel, BorderLayout.CENTER);
-        frame.pack();
-        frame.setVisible(true);
+        return frame;
     }
-    public void generateDiagram(int[] arr, String diagramName, String yName){
+    public JPanel generateDiagram(int[] arr, String diagramName, String yName){
         int dataSize = arr.length;
 
         XYSeries series = new XYSeries(diagramName);
@@ -126,7 +167,7 @@ public class ProcesSolvingAlgorythms {
 
         XYSeriesCollection dataset = new XYSeriesCollection(series);
 
-        JFreeChart chart = ChartFactory.createXYLineChart(
+        JFreeChart chart = ChartFactory.createScatterPlot(
                 diagramName,
                 "Index",
                 yName,
@@ -135,12 +176,12 @@ public class ProcesSolvingAlgorythms {
 
         ChartPanel chartPanel = new ChartPanel(chart);
 
-        JFrame frame = new JFrame(diagramName);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        JLabel label = new JLabel(diagramName);
+        JPanel frame = new JPanel();
         frame.setLayout(new BorderLayout());
+        frame.add(label, BorderLayout.NORTH);
         frame.add(chartPanel, BorderLayout.CENTER);
-        frame.pack();
-        frame.setVisible(true);
+        return frame;
     }
 
     public void createDistribution(int dataSize){

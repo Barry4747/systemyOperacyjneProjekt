@@ -2,15 +2,15 @@ package requestFiles;
 
 public class Request {
     private int number;
-    private int length;
-    private int beginingLength;
+    private double length;
+    private double beginingLength;
     private int arrivalTime;
     private int endTime;
     private int totalWait;
     private boolean done;
 
 
-    public Request(int number, int length, int arrivalTime, int totalWait) {
+    public Request(int number, float length, int arrivalTime, int totalWait) {
         this.number = number;
         this.length = length;
         this.beginingLength = length;
@@ -27,11 +27,11 @@ public class Request {
         this.number = number;
     }
 
-    public int getLength() {
+    public double getLength() {
         return length;
     }
 
-    public void setLength(int length) {
+    public void setLength(double length) {
         this.length = length;
     }
 
@@ -67,11 +67,11 @@ public class Request {
         this.endTime = endTime;
     }
 
-    public int getBeginingLength() {
+    public double getBeginingLength() {
         return beginingLength;
     }
 
-    public void setBeginingLength(int beginingLength) {
+    public void setBeginingLength(double beginingLength) {
         this.beginingLength = beginingLength;
     }
 
