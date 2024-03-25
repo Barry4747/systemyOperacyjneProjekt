@@ -7,6 +7,7 @@ public class Request {
     private int arrivalTime;
     private int endTime;
     private int totalWait;
+    private int duration;
     private boolean done;
 
 
@@ -17,6 +18,7 @@ public class Request {
         this.arrivalTime = arrivalTime;
         this.endTime = totalWait;
         this.done = false;
+        this.duration=0;
     }
     //getters and setters
     public int getNumber() {
@@ -73,6 +75,14 @@ public class Request {
 
     public void setBeginingLength(double beginingLength) {
         this.beginingLength = beginingLength;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     @Override

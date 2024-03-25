@@ -5,6 +5,7 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import requestFiles.Request;
@@ -19,6 +20,7 @@ import static requestFiles.RequestBuilder.buildRequests;
 
 public class ProcesSolvingAlgorythms {
     private int duration;
+    int maxProcesCreated =1;
     private double[] probabilities;
     private float timePeriod;
 
@@ -58,9 +60,10 @@ public class ProcesSolvingAlgorythms {
         int counter=0;
 
         for(int i=0; i<duration; i++){
-            list.addAll(buildRequests(1, i, 2.0, 50, probabilities[i], duration));
+            list.addAll(buildRequests(maxProcesCreated, i, 2.0, 50, probabilities[i], duration));
             if(!list.isEmpty()&&counter!=list.size()){
                 list.get(counter).setLength(list.get(counter).getLength()-timePeriod);
+                list.get(counter).setDuration(list.get(counter).getDuration()+1);
                 if(list.get(counter).getLength()<=0){
                     list.get(counter).setDone(true);
                     list.get(counter).setEndTime(i);
@@ -84,7 +87,7 @@ public class ProcesSolvingAlgorythms {
 
         for(int i=0; i<duration; i++){
             tempList = new LinkedList<>();
-            tempList.addAll(buildRequests(1, i, 2.0, 50, probabilities[i], duration));
+            tempList.addAll(buildRequests(maxProcesCreated, i, 2.0, 50, probabilities[i], duration));
             queue.addAll(tempList);
             list.addAll(tempList);
 
@@ -93,9 +96,43 @@ public class ProcesSolvingAlgorythms {
 //                list.add(tempRequest);
             } else if (!queue.isEmpty()) {
                 tempRequest.setLength(tempRequest.getLength()-timePeriod);
+                tempRequest.setDuration(tempRequest.getDuration()+1);
                 if(tempRequest.getLength()<=0){
                     tempRequest.setEndTime(i);
                     tempRequest.setDone(true);
+                    tempRequest=queue.remove();
+                }
+            }
+        }
+//        while(!queue.isEmpty()){
+//            list.add(queue.remove());
+//        }
+        return list;
+    }
+
+    public LinkedList<Request> sjfw(){
+        LinkedList<Request> list = new LinkedList<>();
+
+        PriorityQueue<Request> queue = new PriorityQueue<>(Comparator.comparing(Request::getLength));
+
+        Request tempRequest=null;
+
+        LinkedList<Request> tempList = new LinkedList<>();
+
+        for(int i=0; i<duration; i++){
+            tempList = new LinkedList<>();
+            tempList.addAll(buildRequests(maxProcesCreated, i, 2.0, 50, probabilities[i], duration));
+            queue.addAll(tempList);
+            list.addAll(tempList);
+            if(!queue.isEmpty()){
+                tempRequest=queue.remove();
+                tempRequest.setLength(tempRequest.getLength()-timePeriod);
+                tempRequest.setDuration(tempRequest.getDuration()+1);
+                if(tempRequest.getLength()<=0){
+                    tempRequest.setEndTime(i);
+                    tempRequest.setDone(true);
+                }else {
+                    queue.add(tempRequest);
                 }
             }
         }
@@ -109,21 +146,35 @@ public class ProcesSolvingAlgorythms {
         LinkedList<Request> list = new LinkedList<>();
 
         int counter=0;
+        int iter=0;
 
-        for(int i=0; i<duration; i+=k){
-            for(int j=0; j<k; j++) {
-                list.addAll(buildRequests(1, i, 2.0, 50, probabilities[i], duration));
-            }
-            if(list.size()!=counter) {
-                list.get(counter).setLength(list.get(counter).getLength() - k + 1 - timePeriod);
-                if (list.get(counter).getLength() <= 0) {
-                    list.get(counter).setEndTime(i);
-                    list.get(counter).setDone(true);
+        for(int i=0; i<duration; i++){
+
+            list.addAll(buildRequests(maxProcesCreated, i, 2.0, 50, probabilities[i], duration));
+
+            if(list.size()!=iter) {
+                list.get(iter).setLength(list.get(iter).getLength() - timePeriod);
+                list.get(iter).setDuration(list.get(iter).getDuration()+1);
+                if (list.get(iter).getLength() <= 0) {
+                    list.get(iter).setDuration((int) (list.get(iter).getDuration()-list.get(iter).getLength()));
+                    list.get(iter).setEndTime(i);
+                    list.get(iter).setDone(true);
+                    iter++;
+                    counter=0;
+                    if(iter==list.size()){
+                        iter=0;
+                    }
+                } else if (counter<k-1) {
                     counter++;
+                } else if (counter==k-1) {
+                    counter=0;
+                    iter++;
                 }
+            }else {
+                iter=0;
+                counter=0;
             }
         }
-        System.out.println("Skończone zadania: "+counter);
 
 
         return list;
@@ -182,6 +233,29 @@ public class ProcesSolvingAlgorythms {
         frame.add(label, BorderLayout.NORTH);
         frame.add(chartPanel, BorderLayout.CENTER);
         return frame;
+    }
+    public JPanel strips(int done, int started, int notStarted, String name) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.setMaximumSize(new Dimension(300,300));
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+
+        dataset.addValue(done, "Zakończone", " ");
+        dataset.addValue(started, "Rozpoczęte, ale nieskończone", " ");
+        dataset.addValue(notStarted, "Niezaczęte", " ");
+
+
+        JFreeChart chart = ChartFactory.createBarChart(
+                name,
+                "",
+                "Ilość procesów",
+                dataset
+        );
+
+        ChartPanel chartPanel = new ChartPanel(chart);
+        panel.add(BorderLayout.CENTER,chartPanel);
+        return panel;
     }
 
     public void createDistribution(int dataSize){
