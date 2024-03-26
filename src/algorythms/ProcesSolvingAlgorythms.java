@@ -15,6 +15,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.rmi.registry.Registry;
 import java.util.*;
+import java.util.List;
 
 import static requestFiles.RequestBuilder.buildRequests;
 
@@ -55,8 +56,8 @@ public class ProcesSolvingAlgorythms {
         this.timePeriod = timePeriod;
     }
 
-    public LinkedList<Request> fcfs(){
-        LinkedList<Request> list = new LinkedList<>();
+    public List<Request> fcfs(){
+        List<Request> list = new ArrayList<>();
         int counter=0;
 
         for(int i=0; i<duration; i++){
@@ -76,17 +77,17 @@ public class ProcesSolvingAlgorythms {
         return list;
     }
 
-    public LinkedList<Request> sjf(){
-        LinkedList<Request> list = new LinkedList<>();
+    public List<Request> sjf(){
+        List<Request> list = new ArrayList<>();
 
         PriorityQueue<Request> queue = new PriorityQueue<>(Comparator.comparing(Request::getBeginingLength));
 
         Request tempRequest=null;
 
-        LinkedList<Request> tempList = new LinkedList<>();
+        List<Request> tempList = new LinkedList<>();
 
         for(int i=0; i<duration; i++){
-            tempList = new LinkedList<>();
+            tempList = new ArrayList<>();
             tempList.addAll(buildRequests(maxProcesCreated, i, 2.0, 50, probabilities[i], duration));
             queue.addAll(tempList);
             list.addAll(tempList);
@@ -110,17 +111,17 @@ public class ProcesSolvingAlgorythms {
         return list;
     }
 
-    public LinkedList<Request> sjfw(){
-        LinkedList<Request> list = new LinkedList<>();
+    public List<Request> sjfw(){
+        List<Request> list = new ArrayList<>();
 
         PriorityQueue<Request> queue = new PriorityQueue<>(Comparator.comparing(Request::getLength));
 
         Request tempRequest=null;
 
-        LinkedList<Request> tempList = new LinkedList<>();
+        List<Request> tempList = new LinkedList<>();
 
         for(int i=0; i<duration; i++){
-            tempList = new LinkedList<>();
+            tempList = new ArrayList<>();
             tempList.addAll(buildRequests(maxProcesCreated, i, 2.0, 50, probabilities[i], duration));
             queue.addAll(tempList);
             list.addAll(tempList);
@@ -142,8 +143,8 @@ public class ProcesSolvingAlgorythms {
         return list;
     }
 
-    public LinkedList<Request> rr(int k){
-        LinkedList<Request> list = new LinkedList<>();
+    public List<Request> rr(int k){
+        List<Request> list = new ArrayList<>();
 
         int counter=0;
         int iter=0;
@@ -234,7 +235,7 @@ public class ProcesSolvingAlgorythms {
         frame.add(chartPanel, BorderLayout.CENTER);
         return frame;
     }
-    public JPanel strips(int done, int started, int notStarted, String name) {
+    public JPanel strips(double done, double started, double notStarted, String name) {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.setMaximumSize(new Dimension(300,300));

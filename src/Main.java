@@ -3,7 +3,9 @@ import requestFiles.Request;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,15 +15,9 @@ public class Main {
         //timePeriod ustawia czas wykonywania procesu w trakcie jednej sekundy, czyli jesli ustawimy 0.99 znaczy to tyle, ze 0.01 trwa przelaczanie miedzy procesem
         ProcesSolvingAlgorythms procesSolvingAlgorythms = new ProcesSolvingAlgorythms(duration, 1);
         procesSolvingAlgorythms.createDistribution(duration);
-        procesSolvingAlgorythms.generateDiagram(procesSolvingAlgorythms.getProbabilities(), "Rozkład prawdopodobieństwa", "Prawdopodobieństwo");
+        //procesSolvingAlgorythms.generateDiagram(procesSolvingAlgorythms.getProbabilities(), "Rozkład prawdopodobieństwa", "Prawdopodobieństwo");
+        System.out.println("Distribution ready");
 
-
-        LinkedList<Request>[] list = new LinkedList[4];
-        list[0] = procesSolvingAlgorythms.fcfs();
-        list[1] =procesSolvingAlgorythms.sjf();
-        list[3] = procesSolvingAlgorythms.rr(kwant);
-        list[2] = procesSolvingAlgorythms.sjfw();
-        System.out.println("Done");
 
         String[] name = {"fcfs", "sjf", "sjfw", "rr"};
         String[] frameNames = {"Dlugosc procesu", "Czas pojawienia sie procesu", "czas zakonczenia procesu", "czas oczekiwania", "czas a ilosc procesow", "czas trwania", "status procesow"};
@@ -31,23 +27,36 @@ public class Main {
         for(int i=0; i<frames.length; i++){
             frames[i] = new JFrame(frameNames[i]);
             frames[i].setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            frames[i].setLayout(new GridLayout(1, list.length));
+            frames[i].setLayout(new GridLayout(1, 4));
         }
 
-        for(int j=0; j< list.length; j++) {
 
-            int averageDoneWaitingTime = 0;
-            int averageWaitingTime = 0;
-            int done = 0;
-            int averageSize = 0;
+
+
+        List<Request>[] list = new List[4];
+        list[0] = procesSolvingAlgorythms.fcfs();
+        System.out.println("fcfs done");
+        list[1] =procesSolvingAlgorythms.sjf();
+        System.out.println("sjf done");
+        list[3] = procesSolvingAlgorythms.rr(kwant);
+        System.out.println("rr done");
+        list[2] = procesSolvingAlgorythms.sjfw();
+        System.out.println("Done");
+
+        for(int j=0; j< 4; j++) {
+
+            double averageDoneWaitingTime = 0;
+            double averageWaitingTime = 0;
+            double done = 0;
+            double averageSize = 0;
 
             double[] beginingLength = new double[list[j].size()];
-            int[] arrivalTime = new int[list[j].size()];
-            int[] endTime = new int[list[j].size()];
-            int[] totalWait = new int[list[j].size()];
-            int[] tasksPerTime = new int[duration];
-            int[] durationOfProcces = new int[list[j].size()];
-            int[] taskStatus = {0,0,0};
+            double[] arrivalTime = new double[list[j].size()];
+            double[] endTime = new double[list[j].size()];
+            double[] totalWait = new double[list[j].size()];
+            double[] tasksPerTime = new double[duration];
+            double[] durationOfProcces = new double[list[j].size()];
+            double[] taskStatus = {0,0,0};
             for(int i=0; i<duration; i++){
                 tasksPerTime[i]=0;
             }
