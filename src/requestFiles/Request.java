@@ -9,16 +9,18 @@ public class Request {
     private int totalWait;
     private int duration;
     private boolean done;
+    private boolean isStarved;
 
 
-    public Request(int number, float length, int arrivalTime, int totalWait) {
+    public Request(int number, float length, int arrivalTime, int endTime) {
         this.number = number;
         this.length = length;
         this.beginingLength = length;
         this.arrivalTime = arrivalTime;
-        this.endTime = totalWait;
+        this.endTime = endTime;
         this.done = false;
         this.duration=0;
+        this.isStarved=false;
     }
     //getters and setters
     public int getNumber() {
@@ -83,6 +85,14 @@ public class Request {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public boolean isStarved() {
+        return isStarved;
+    }
+
+    public void setStarved(boolean starved) {
+        isStarved = starved;
     }
 
     @Override

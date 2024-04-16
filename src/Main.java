@@ -33,57 +33,71 @@ public class Main {
 
 
 
-        List<Request>[] list = new List[4];
-        list[0] = procesSolvingAlgorythms.fcfs();
-        System.out.println("fcfs done");
-        list[1] =procesSolvingAlgorythms.sjf();
-        System.out.println("sjf done");
-        list[3] = procesSolvingAlgorythms.rr(kwant);
-        System.out.println("rr done");
-        list[2] = procesSolvingAlgorythms.sjfw();
-        System.out.println("Done");
+//        List<Request>[] list = new List[4];
+//        list[0] = procesSolvingAlgorythms.fcfs();
+//        System.out.println("fcfs done");
+//        list[1] =procesSolvingAlgorythms.sjf();
+//        System.out.println("sjf done");
+//        list[3] = procesSolvingAlgorythms.rr(kwant);
+//        System.out.println("rr done");
+//        list[2] = procesSolvingAlgorythms.sjfw();
+//        System.out.println("Done");
 
         for(int j=0; j< 4; j++) {
-
             double averageDoneWaitingTime = 0;
             double averageWaitingTime = 0;
             double done = 0;
             double averageSize = 0;
 
-            double[] beginingLength = new double[list[j].size()];
-            double[] arrivalTime = new double[list[j].size()];
-            double[] endTime = new double[list[j].size()];
-            double[] totalWait = new double[list[j].size()];
+            List<Request> list = switch (j) {
+                case 0 -> procesSolvingAlgorythms.fcfs();
+                case 1 -> procesSolvingAlgorythms.sjf();
+                case 2 -> procesSolvingAlgorythms.sjfw();
+                case 3 -> procesSolvingAlgorythms.rr(kwant);
+                default -> null;
+            };
+
+            System.out.println("Done");
+
+            double size = list.size();
+            double[] beginingLength = new double[list.size()];
+            double[] arrivalTime = new double[list.size()];
+            double[] endTime = new double[list.size()];
+            double[] totalWait = new double[list.size()];
             double[] tasksPerTime = new double[duration];
-            double[] durationOfProcces = new double[list[j].size()];
+            double[] durationOfProcces = new double[list.size()];
             double[] taskStatus = {0,0,0};
             for(int i=0; i<duration; i++){
                 tasksPerTime[i]=0;
             }
 
+            int starved = 0;
 
+            for (int i = 0; i < list.size(); i++) {
+                list.get(i).calculateTotalWait();
 
-            for (int i = 0; i < list[j].size(); i++) {
-                list[j].get(i).calculateTotalWait();
-
-                durationOfProcces[i] = list[j].get(i).getDuration();
-                tasksPerTime[list[j].get(i).getArrivalTime()] += 1;
-                beginingLength[i] = list[j].get(i).getBeginingLength();
-                arrivalTime[i] = list[j].get(i).getArrivalTime();
-                endTime[i] = list[j].get(i).getEndTime();
-                totalWait[i] = list[j].get(i).getTotalWait();
+                durationOfProcces[i] = list.get(i).getDuration();
+                tasksPerTime[list.get(i).getArrivalTime()] += 1;
+                beginingLength[i] = list.get(i).getBeginingLength();
+                arrivalTime[i] = list.get(i).getArrivalTime();
+                endTime[i] = list.get(i).getEndTime();
+                totalWait[i] = list.get(i).getTotalWait();
+                if(!list.get(i).isDone()&&list.get(i).getTotalWait()>100){
+                    list.get(i).setStarved(true);
+                    starved++;
+                }
 //                System.out.println(list[j].get(i).toString());
-                if (list[j].get(i).isDone()) {
+                if (list.get(i).isDone()) {
                     taskStatus[0]++;
-                    averageDoneWaitingTime += list[j].get(i).getTotalWait();
+                    averageDoneWaitingTime += list.get(i).getTotalWait();
                     done++;
-                } else if (list[j].get(i).getDuration()!=0) {
+                } else if (list.get(i).getDuration()!=0) {
                     taskStatus[1]++;
                 }else {
                     taskStatus[2]++;
                 }
-                averageWaitingTime += list[j].get(i).getTotalWait();
-                averageSize += list[j].get(i).getBeginingLength();
+                averageWaitingTime += list.get(i).getTotalWait();
+                averageSize += list.get(i).getBeginingLength();
             }
 
             frames[0].add(procesSolvingAlgorythms.generateDiagram(beginingLength, name[j], "Długość"));
@@ -95,9 +109,9 @@ public class Main {
             frames[6].add(procesSolvingAlgorythms.strips(taskStatus[0], taskStatus[1], taskStatus[2], name[j]));
 
 
-            System.out.println(name[j]+"|| Średni czas oczekiwania: " + averageWaitingTime / list[j].size() + " Średni czas oczekiwania zakończonych procesów: " + averageDoneWaitingTime / done + " Średni rozmiar: " + averageSize / list[j].size() + " Done: " + done);
+            System.out.println(name[j]+"|| Średni czas oczekiwania: " + averageWaitingTime / size + " Średni czas oczekiwania zakończonych procesów: " + averageDoneWaitingTime / done + " Średni rozmiar: " + averageSize / size + " Done: " + done+ " Liczba zagłodzonych procesów: "+starved);
 
-            System.out.println("Utworzono: " + list[j].size());
+            System.out.println("Utworzono: " + size);
 
             System.out.println(taskStatus[1]);
         }

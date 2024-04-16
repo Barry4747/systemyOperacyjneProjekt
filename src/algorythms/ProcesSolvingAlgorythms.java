@@ -144,14 +144,16 @@ public class ProcesSolvingAlgorythms {
     }
 
     public List<Request> rr(int k){
+        int switches=0;
         List<Request> list = new ArrayList<>();
 
         int counter=0;
         int iter=0;
-
+        List<Request> ansList = new ArrayList<>();
         for(int i=0; i<duration; i++){
-
-            list.addAll(buildRequests(maxProcesCreated, i, 2.0, 50, probabilities[i], duration));
+            List<Request> tempRequest=buildRequests(maxProcesCreated, i, 2.0, 50, probabilities[i], duration);
+            list.addAll(tempRequest);
+            ansList.addAll(tempRequest);
 
             if(list.size()!=iter) {
                 list.get(iter).setLength(list.get(iter).getLength() - timePeriod);
@@ -160,25 +162,31 @@ public class ProcesSolvingAlgorythms {
                     list.get(iter).setDuration((int) (list.get(iter).getDuration()-list.get(iter).getLength()));
                     list.get(iter).setEndTime(i);
                     list.get(iter).setDone(true);
-                    iter++;
+                    switches++;
                     counter=0;
+                    list.remove(iter);
                     if(iter==list.size()){
                         iter=0;
                     }
-                } else if (counter<k-1) {
+                } else if (counter<k) {
                     counter++;
-                } else if (counter==k-1) {
+                } else if (counter==k) {
                     counter=0;
                     iter++;
+                    switches++;
                 }
-            }else {
+            } else if (!list.isEmpty()) {
+                iter=0;
+                counter=0;
+                switches++;
+            } else {
                 iter=0;
                 counter=0;
             }
         }
 
-
-        return list;
+        System.out.println("Przelaczenia dla rr: "+switches);
+        return ansList;
     }
 
 
